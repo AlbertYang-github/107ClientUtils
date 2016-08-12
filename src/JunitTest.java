@@ -12,8 +12,17 @@ public class JunitTest {
             //连接到服务器
             LoginUtils loginUtils = new LoginUtils();
             //注册
-            loginUtils.register(1, "yanghuan3", "abc123");
-            loginUtils.close();
+            loginUtils.register(Constants.REGISTER, "杨欢", "abc123");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void login() {
+        try {
+            LoginUtils loginUtils = new LoginUtils();
+            loginUtils.login(Constants.LOGIN, "yanghuan", "abc123");
         } catch (IOException e) {
             e.printStackTrace();
         }

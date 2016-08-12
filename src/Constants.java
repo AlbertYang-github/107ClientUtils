@@ -15,5 +15,9 @@ public class Constants {
     /**
      * 注册
      */
-    public static final int REGISTER = 1;
+    public static final String REGISTER = "001";
+    /**
+     * 登录
+     */
+    public static final String LOGIN = "002";
 }
