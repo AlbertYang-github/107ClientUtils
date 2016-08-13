@@ -12,7 +12,8 @@ public class JunitTest {
             //连接到服务器
             LoginUtils loginUtils = new LoginUtils();
             //注册
-            loginUtils.register(Constants.REGISTER, "杨欢", "abc123");
+            String s = loginUtils.register(Constants.REGISTER, "yanghuan", "123");
+            System.out.println("注册结果：" + s);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -22,7 +23,8 @@ public class JunitTest {
     public void login() {
         try {
             LoginUtils loginUtils = new LoginUtils();
-            loginUtils.login(Constants.LOGIN, "yanghuan", "abc123");
+            String s = loginUtils.login(Constants.LOGIN, "yanghuan", "123");
+            System.out.println("登陆结果：" + s);
         } catch (IOException e) {
             e.printStackTrace();
         }
