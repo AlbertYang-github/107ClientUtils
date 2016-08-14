@@ -1,5 +1,6 @@
 import bean.UserBean;
 import com.google.gson.Gson;
+import utils.StreamUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,7 +39,7 @@ public class LoginUtils {
      *
      * @return
      */
-    public String register(String head, String username, String password) throws IOException {
+    public String register(String header, String username, String password) throws IOException {
 
         //返回的信息
         String userMsg = null;
@@ -52,7 +53,7 @@ public class LoginUtils {
 
             //创建head + Json串
             String regData = gson.toJson(userBean);
-            regData = head + regData;
+            regData = header + regData;
 
             //写入输出流
             OutputStream out = socket.getOutputStream();
@@ -64,6 +65,8 @@ public class LoginUtils {
             userMsg = StreamUtils.readString(in);
 
             //关闭流和socket
+            out.close();
+            in.close();
             StreamUtils.close();
             socket.close();
         }
@@ -78,7 +81,7 @@ public class LoginUtils {
      *
      * @return
      */
-    public String login(String head, String username, String password) throws IOException {
+    public String login(String header, String username, String password) throws IOException {
 
         //返回的信息
         String userMsg = null;
@@ -92,7 +95,7 @@ public class LoginUtils {
 
             //创建head + Json串
             String regData = gson.toJson(userBean);
-            regData = head + regData;
+            regData = header + regData;
 
             //写入输出流
             OutputStream out = socket.getOutputStream();
@@ -104,6 +107,8 @@ public class LoginUtils {
             userMsg = StreamUtils.readString(in);
 
             //关闭流和socket
+            out.close();
+            in.close();
             StreamUtils.close();
             socket.close();
         }
