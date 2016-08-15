@@ -1,3 +1,5 @@
+package constants;
+
 /**
  * Created by Yohann on 2016/8/11.
  */
@@ -6,7 +8,8 @@ public class Constants {
     /**
      * 主机地址
      */
-    public static final String HOST = "10.130.134.9";
+//    public static final String HOST = "123.206.8.57";   //服务器
+    public static final String HOST = "10.130.134.9";   //本台电脑
 
     /**
      * 主机端口号

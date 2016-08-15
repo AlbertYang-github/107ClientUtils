@@ -1,5 +1,10 @@
+package test;
+
+import constants.Constants;
 import org.junit.Test;
-import utils.StringUtils;
+import myutils.StringUtils;
+import utils.EventUpLoadUtils;
+import utils.LoginUtils;
 
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -14,7 +19,7 @@ public class JunitTest {
             //连接到服务器
             LoginUtils loginUtils = new LoginUtils();
             //注册
-            String s = loginUtils.register(Constants.REGISTER, "yanghuan", "123");
+            String s = loginUtils.register(Constants.REGISTER, "albert", "123");
             System.out.println("注册返回数据：" + s);
         } catch (IOException e) {
             e.printStackTrace();
@@ -43,12 +48,12 @@ public class JunitTest {
                     45.454334,
                     12.232334,
                     23.345454,
-                    new String[]{"拥堵", "事故", "警察"},
+                    new String[]{"拥堵"},
                     "中北大学到胜利桥东严重堵车",
                     "主要是由于滨河东路施工引起的",
-                    new String[]{"voice1.mp3", "voice2.mp3"},
+                    "voice.mp3",
                     new String[]{"pic1.jpg", "pic2.jpg"},
-                    new String[]{"video2.mp4", "video2.mp4"},
+                    "video.mp4",
                     new Timestamp(System.currentTimeMillis()));
             System.out.println("添加的返回结果：" + result);
         } catch (IOException e) {

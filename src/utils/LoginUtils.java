@@ -1,6 +1,9 @@
+package utils;
+
 import bean.UserBean;
 import com.google.gson.Gson;
-import utils.StreamUtils;
+import constants.Constants;
+import myutils.StreamUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,7 +36,7 @@ public class LoginUtils {
     /**
      * 注册
      * <p>
-     * 使用说明：参数 head 是信息，根据请求目的选择 Constants 中的常量填入
+     * 使用说明：参数 head 是信息，根据请求目的选择 constants.Constants 中的常量填入
      * 如果注册成功，返回用户个人的具体信息 (Json格式字符串)
      * 如果注册失败，返回字符串"error"
      *

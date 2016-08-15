@@ -1,15 +1,17 @@
+package utils;
+
 import bean.EventBean;
 import com.google.gson.Gson;
-import com.sun.deploy.trace.SocketTraceListener;
-import utils.StreamUtils;
-import utils.StringUtils;
+import constants.Constants;
+import myutils.StreamUtils;
+import myutils.StringUtils;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 
 /**
  * 事件工具类
@@ -38,18 +40,18 @@ public class EventUpLoadUtils {
      * 上传时间到服务器
      *
      * @param header         消息头 (参考常量类Constants)
-     * @param startLocation  起始地名 50
-     * @param endLocation    结束地名 50
+     * @param startLocation  起始地名 100
+     * @param endLocation    结束地名 100
      * @param startLongitude 起始经度
      * @param endLongitude   结束经度
      * @param startLatitude  起始纬度
      * @param endLatitude    结束纬度
-     * @param eventLabels    事件标签 (多个标签写法例如："拥堵&事故&警察") 30
-     * @param eventTitle     事件标题 100
+     * @param eventLabels    事件标签 (多个标签写法例如："拥堵&事故&警察") 100
+     * @param eventTitle     事件标题 300
      * @param eventDesc      事件描述 1000
-     * @param eventVoice     语音文件名(包括后缀) 200
-     * @param eventPic       图片文件名(包括后缀) 200
-     * @param eventVideo     视频文件名(包括后缀) 200
+     * @param eventVoice     语音文件名(包括后缀) 100
+     * @param eventPic       图片文件名(包括后缀) (一个或一个以上) 100
+     * @param eventVideo     视频文件名(包括后缀) 100
      * @param startTime      开始时间 类型为Timestamp
      * @param voiceBin       语音字节数组流
      * @param picBin         图片字节数组流
@@ -66,13 +68,13 @@ public class EventUpLoadUtils {
                                String[] eventLabels,
                                String eventTitle,
                                String eventDesc,
-                               String[] eventVoice,
+                               String eventVoice,
                                String[] eventPic,
-                               String[] eventVideo,
+                               String eventVideo,
                                Timestamp startTime,
-                               ByteArrayOutputStream[] voiceBin,
-                               ByteArrayOutputStream[] picBin,
-                               ByteArrayOutputStream[] videoBin) {
+                               byte[] voiceBin,
+                               ArrayList<byte[]> picBin,
+                               byte[] videoBin) {
 
         boolean result = false;
 
@@ -95,7 +97,12 @@ public class EventUpLoadUtils {
                     startTime)) {
 
                 //上传二进制文件
-                if (uploadBinary(voiceBin, picBin, videoBin)) {
+                if (uploadBinary(eventVoice,
+                        eventPic,
+                        eventVideo,
+                        voiceBin,
+                        picBin,
+                        videoBin)) {
                     result = true;
                 }
             }
@@ -112,20 +119,20 @@ public class EventUpLoadUtils {
     /**
      * 向服务器上传事件文本信息
      *
-     * @param header         消息头 (参考常量类Constants)
-     * @param startLocation  起始地名 50
-     * @param endLocation    结束地名 50
-     * @param startLongitude 起始经度
-     * @param endLongitude   结束经度
-     * @param startLatitude  起始纬度
-     * @param endLatitude    结束纬度
-     * @param eventLabels    事件标签 (多个标签写法例如："拥堵&事故&警察") 30
-     * @param eventTitle     事件标题 100
-     * @param eventDesc      事件描述 1000
-     * @param eventVoice     语音文件名(包括后缀) 200
-     * @param eventPic       图片文件名(包括后缀) 200
-     * @param eventVideo     视频文件名(包括后缀) 200
-     * @param startTime      开始时间 类型为Timestamp
+     * @param header
+     * @param startLocation
+     * @param endLocation
+     * @param startLongitude
+     * @param endLongitude
+     * @param startLatitude
+     * @param endLatitude
+     * @param eventLabels
+     * @param eventTitle
+     * @param eventDesc
+     * @param eventVoice
+     * @param eventPic
+     * @param eventVideo
+     * @param startTime
      * @return
      * @throws IOException
      */
@@ -139,18 +146,17 @@ public class EventUpLoadUtils {
                               String[] eventLabels,
                               String eventTitle,
                               String eventDesc,
-                              String[] eventVoice,
+                              String eventVoice,
                               String[] eventPic,
-                              String[] eventVideo,
+                              String eventVideo,
                               Timestamp startTime) throws IOException {
+
         //读取到输入流的返回信息
         String result = null;
 
         //将数组转换为以&连接的字符串
         String labels = StringUtils.getStringFromArray(eventLabels);
-        String voice = StringUtils.getStringFromArray(eventVoice);
         String picture = StringUtils.getStringFromArray(eventPic);
-        String video = StringUtils.getStringFromArray(eventVideo);
 
         if (socket != null) {
 
@@ -165,9 +171,9 @@ public class EventUpLoadUtils {
             eventBean.setEventLabels(labels);
             eventBean.setEventTitle(eventTitle);
             eventBean.setEventDesc(eventDesc);
-            eventBean.setVoice(voice);
+            eventBean.setVoice(eventVoice);
             eventBean.setPicture(picture);
-            eventBean.setVideo(video);
+            eventBean.setVideo(eventVideo);
             eventBean.setStartTime(startTime);
 
             //创建head + Json串
@@ -202,9 +208,12 @@ public class EventUpLoadUtils {
      *
      * @return
      */
-    public boolean uploadBinary(ByteArrayOutputStream[] voiceBin,
-                                ByteArrayOutputStream[] picBin,
-                                ByteArrayOutputStream[] videoBin) {
+    public boolean uploadBinary(String eventVoice,
+                                String[] eventPic,
+                                String eventVideo,
+                                byte[] voiceBin,
+                                ArrayList<byte[]> picBin,
+                                byte[] videoBin) {
         boolean result = false;
         OutputStream out = null;
 
@@ -212,24 +221,6 @@ public class EventUpLoadUtils {
             socket = new Socket(Constants.HOST, Constants.PORT);
             out = socket.getOutputStream();
 
-            //音频文件
-            for (ByteArrayOutputStream voice : voiceBin) {
-                byte[] bytes = voice.toByteArray();
-                out.write(bytes);
-                out.flush();
-            }
-
-            //图片文件
-            for (ByteArrayOutputStream pic : picBin) {
-                byte[] bytes = pic.toByteArray();
-                out.write(bytes);
-            }
-
-            //视频文件
-            for (ByteArrayOutputStream video : videoBin) {
-                byte[] bytes = video.toByteArray();
-                out.write(bytes);
-            }
 
         } catch (IOException e) {
             e.printStackTrace();
