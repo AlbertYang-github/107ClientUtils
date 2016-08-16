@@ -1,5 +1,6 @@
 package utils;
 
+import bean.BinaryBean;
 import bean.EventBean;
 import com.google.gson.Gson;
 import constants.Constants;
@@ -8,6 +9,7 @@ import myutils.StringUtils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.sql.Timestamp;
@@ -23,7 +25,8 @@ import java.util.ArrayList;
  */
 public class EventUpLoadUtils {
 
-    private Socket socket;
+    private Socket socketJson;
+    private Socket socketObj;
     private Gson gson;
 
     /**
@@ -32,7 +35,7 @@ public class EventUpLoadUtils {
      * @throws IOException
      */
     public EventUpLoadUtils() throws IOException {
-        socket = new Socket(Constants.HOST, Constants.PORT);
+        socketJson = new Socket(Constants.HOST, Constants.PORT_JSON);
         gson = new Gson();
     }
 
@@ -74,45 +77,39 @@ public class EventUpLoadUtils {
                                Timestamp startTime,
                                byte[] voiceBin,
                                ArrayList<byte[]> picBin,
-                               byte[] videoBin) {
+                               byte[] videoBin) throws IOException {
+        boolean db = false;
+        boolean loc = false;
 
-        boolean result = false;
+        //上传文本内容
+        db = uploadText(header,
+                startLocation,
+                endLocation,
+                startLongitude,
+                endLongitude,
+                startLatitude,
+                endLatitude,
+                eventLabels,
+                eventTitle,
+                eventDesc,
+                eventVoice,
+                eventPic,
+                eventVideo,
+                startTime);
 
-        try {
-
-            //上传到数据库
-            if (uploadText(header,
-                    startLocation,
-                    endLocation,
-                    startLongitude,
-                    endLongitude,
-                    startLatitude,
-                    endLatitude,
-                    eventLabels,
-                    eventTitle,
-                    eventDesc,
-                    eventVoice,
-                    eventPic,
-                    eventVideo,
-                    startTime)) {
-
-                //上传二进制文件
-                if (uploadBinary(eventVoice,
-                        eventPic,
-                        eventVideo,
-                        voiceBin,
-                        picBin,
-                        videoBin)) {
-                    result = true;
-                }
-            }
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        //上传二进制内容
+        if (eventVoice == null && eventPic == null && eventVideo == null) {
+            //没有二进制文件可上传
+        } else {
+            loc = uploadBinary(eventVoice, eventPic, eventVideo, voiceBin, picBin, videoBin);
         }
 
-        return result;
-
+        //两者都成功才返回true
+        if (db == true && loc == true) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
 
@@ -158,7 +155,7 @@ public class EventUpLoadUtils {
         String labels = StringUtils.getStringFromArray(eventLabels);
         String picture = StringUtils.getStringFromArray(eventPic);
 
-        if (socket != null) {
+        if (socketJson != null) {
 
             //创建事件模型
             EventBean eventBean = new EventBean();
@@ -181,19 +178,19 @@ public class EventUpLoadUtils {
             eventData = header + eventData;
 
             //写入输出流，发送给服务器
-            OutputStream out = socket.getOutputStream();
+            OutputStream out = socketJson.getOutputStream();
             StreamUtils.writeString(out, eventData);
-            socket.shutdownOutput();
+            socketJson.shutdownOutput();
 
             //读取输入流，获取执行结果
-            InputStream in = socket.getInputStream();
+            InputStream in = socketJson.getInputStream();
             result = StreamUtils.readString(in);
 
             //关闭流和socket
             out.close();
             in.close();
             StreamUtils.close();
-            socket.close();
+            socketJson.close();
         }
 
         if ("1".equals(result)) {
@@ -213,21 +210,76 @@ public class EventUpLoadUtils {
                                 String eventVideo,
                                 byte[] voiceBin,
                                 ArrayList<byte[]> picBin,
-                                byte[] videoBin) {
-        boolean result = false;
+                                byte[] videoBin) throws IOException {
+
+        //建立20001端口的连接
+        socketObj = new Socket(Constants.HOST, Constants.PORT_OBJ);
+
+        String result = null;
         OutputStream out = null;
-
+        ObjectOutputStream objectOut = null;
+        InputStream in = null;
         try {
-            socket = new Socket(Constants.HOST, Constants.PORT);
-            out = socket.getOutputStream();
+            //创建新的Socket连接
+            out = socketObj.getOutputStream();
+            objectOut = new ObjectOutputStream(out);
 
+            BinaryBean binaryBean = new BinaryBean();
+            //添加头信息
+            binaryBean.setHeader(Constants.ADD_BIN);
+
+            //语音文件
+            binaryBean.setVoiceBinName(eventVoice);
+            binaryBean.setVoiceStream(voiceBin);
+
+            if (eventPic != null) {
+                //第一张图片
+                binaryBean.setPicBinName1(eventPic[0]);
+                binaryBean.setPicStream1(picBin.get(0));
+
+                //第二张图片
+                binaryBean.setPicBinName2(eventPic[1]);
+                binaryBean.setPicStream2(picBin.get(1));
+
+                //第三张图片
+                binaryBean.setPicBinName3(eventPic[2]);
+                binaryBean.setPicStream3(picBin.get(2));
+            } else {
+                binaryBean.setPicStream1(null);
+                binaryBean.setPicStream2(null);
+                binaryBean.setPicStream3(null);
+            }
+
+            //视频文件
+            binaryBean.setVideoBinName(eventVideo);
+            binaryBean.setVideoStream(videoBin);
+
+            //将对象写入流中
+            objectOut.writeObject(binaryBean);
+            objectOut.flush();
+            socketObj.shutdownOutput();
+
+            //读取输入流，获取执行结果
+//            in = socketObj.getInputStream();
+//            result = StreamUtils.readString(in);
 
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-
+            try {
+                objectOut.close();
+                out.close();
+//                in.close();
+                socketObj.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
-        return result;
+        if ("1".equals(result)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

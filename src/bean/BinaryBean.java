@@ -3,9 +3,13 @@ package bean;
 import java.io.Serializable;
 
 /**
+ * 传输对象模型
+ * <p>
  * Created by Yohann on 2016/8/14.
  */
-public class BinaryInfo implements Serializable {
+public class BinaryBean implements Serializable {
+    private String header;
+
     private String voiceBinName;
     private String picBinName1;
     private String picBinName2;
@@ -16,6 +20,10 @@ public class BinaryInfo implements Serializable {
     private byte[] picStream2;
     private byte[] picStream3;
     private byte[] videoStream;
+
+    public void setHeader(String header) {
+        this.header = header;
+    }
 
     public void setVoiceBinName(String voiceBinName) {
         this.voiceBinName = voiceBinName;
@@ -55,6 +63,10 @@ public class BinaryInfo implements Serializable {
 
     public void setVideoStream(byte[] videoStream) {
         this.videoStream = videoStream;
+    }
+
+    public String getHeader() {
+        return header;
     }
 
     public String getVoiceBinName() {

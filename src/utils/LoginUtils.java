@@ -29,7 +29,7 @@ public class LoginUtils {
      * @throws IOException
      */
     public LoginUtils() throws IOException {
-        socket = new Socket(Constants.HOST, Constants.PORT);
+        socket = new Socket(Constants.HOST, Constants.PORT_JSON);
         gson = new Gson();
     }
 

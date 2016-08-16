@@ -47,4 +47,28 @@ public class StreamUtils {
     public static void close() throws IOException {
         inReader.close();
     }
+
+    public static byte[] getBytes(String filePath) {
+        File file = new File(filePath);
+        FileInputStream fileIn = null;
+        byte[] bytes = null;
+        try {
+            fileIn = new FileInputStream(file);
+            int len = (int) file.length();
+            bytes = new byte[len];
+            fileIn.read(bytes);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                fileIn.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return bytes;
+    }
 }
