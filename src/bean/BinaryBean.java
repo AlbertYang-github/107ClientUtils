@@ -15,11 +15,11 @@ public class BinaryBean implements Serializable {
     private String picBinName2;
     private String picBinName3;
     private String videoBinName;
-    private byte[] voiceStream;
-    private byte[] picStream1;
-    private byte[] picStream2;
-    private byte[] picStream3;
-    private byte[] videoStream;
+    private byte[] voiceBytes;
+    private byte[] picBytes1;
+    private byte[] picBytes2;
+    private byte[] picBytes3;
+    private byte[] videoBytes;
 
     public void setHeader(String header) {
         this.header = header;
@@ -45,24 +45,24 @@ public class BinaryBean implements Serializable {
         this.videoBinName = videoBinName;
     }
 
-    public void setVoiceStream(byte[] voiceStream) {
-        this.voiceStream = voiceStream;
+    public void setVoiceBytes(byte[] voiceBytes) {
+        this.voiceBytes = voiceBytes;
     }
 
-    public void setPicStream1(byte[] picStream1) {
-        this.picStream1 = picStream1;
+    public void setPicBytes1(byte[] picBytes1) {
+        this.picBytes1 = picBytes1;
     }
 
-    public void setPicStream2(byte[] picStream2) {
-        this.picStream2 = picStream2;
+    public void setPicBytes2(byte[] picBytes2) {
+        this.picBytes2 = picBytes2;
     }
 
-    public void setPicStream3(byte[] picStream3) {
-        this.picStream3 = picStream3;
+    public void setPicBytes3(byte[] picBytes3) {
+        this.picBytes3 = picBytes3;
     }
 
-    public void setVideoStream(byte[] videoStream) {
-        this.videoStream = videoStream;
+    public void setVideoBytes(byte[] videoBytes) {
+        this.videoBytes = videoBytes;
     }
 
     public String getHeader() {
@@ -89,23 +89,23 @@ public class BinaryBean implements Serializable {
         return videoBinName;
     }
 
-    public byte[] getVoiceStream() {
-        return voiceStream;
+    public byte[] getVoiceBytes() {
+        return voiceBytes;
     }
 
-    public byte[] getPicStream1() {
-        return picStream1;
+    public byte[] getPicBytes1() {
+        return picBytes1;
     }
 
-    public byte[] getPicStream2() {
-        return picStream2;
+    public byte[] getPicBytes2() {
+        return picBytes2;
     }
 
-    public byte[] getPicStream3() {
-        return picStream3;
+    public byte[] getPicBytes3() {
+        return picBytes3;
     }
 
-    public byte[] getVideoStream() {
-        return videoStream;
+    public byte[] getVideoBytes() {
+        return videoBytes;
     }
 }

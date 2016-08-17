@@ -6,11 +6,9 @@ import com.google.gson.Gson;
 import constants.Constants;
 import myutils.StreamUtils;
 import myutils.StringUtils;
+import myutils.ZLibUtils;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.Socket;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -56,33 +54,33 @@ public class EventUpLoadUtils {
      * @param eventPic       图片文件名(包括后缀) (一个或一个以上) 100
      * @param eventVideo     视频文件名(包括后缀) 100
      * @param startTime      开始时间 类型为Timestamp
-     * @param voiceBin       语音字节数组流
-     * @param picBin         图片字节数组流
+     * @param voiceBin       语音字节数组
+     * @param picBin         图片存放字节数组类型的集合(ArrayList<byte[]>)
      * @param videoBin       视频字节数组流
-     * @return
+     * @return 上传成功返回Json串 (不包括二进制媒体文件)，否则返回 "error"
      */
-    public boolean uploadEvent(String header,
-                               String startLocation,
-                               String endLocation,
-                               Double startLongitude,
-                               Double endLongitude,
-                               Double startLatitude,
-                               Double endLatitude,
-                               String[] eventLabels,
-                               String eventTitle,
-                               String eventDesc,
-                               String eventVoice,
-                               String[] eventPic,
-                               String eventVideo,
-                               Timestamp startTime,
-                               byte[] voiceBin,
-                               ArrayList<byte[]> picBin,
-                               byte[] videoBin) throws IOException {
-        boolean db = false;
+    public String uploadEvent(String header,
+                              String startLocation,
+                              String endLocation,
+                              Double startLongitude,
+                              Double endLongitude,
+                              Double startLatitude,
+                              Double endLatitude,
+                              String[] eventLabels,
+                              String eventTitle,
+                              String eventDesc,
+                              String eventVoice,
+                              String[] eventPic,
+                              String eventVideo,
+                              Long startTime,
+                              byte[] voiceBin,
+                              ArrayList<byte[]> picBin,
+                              byte[] videoBin) throws IOException {
+        String dbResult = null;
         boolean loc = false;
 
         //上传文本内容
-        db = uploadText(header,
+        dbResult = uploadText(header,
                 startLocation,
                 endLocation,
                 startLongitude,
@@ -100,15 +98,19 @@ public class EventUpLoadUtils {
         //上传二进制内容
         if (eventVoice == null && eventPic == null && eventVideo == null) {
             //没有二进制文件可上传
+            if (dbResult != "error") {
+                return dbResult;
+            } else {
+                return "error";
+            }
         } else {
             loc = uploadBinary(eventVoice, eventPic, eventVideo, voiceBin, picBin, videoBin);
-        }
-
-        //两者都成功才返回true
-        if (db == true && loc == true) {
-            return true;
-        } else {
-            return false;
+            //两者都成功才返回true
+            if (dbResult != "error" && loc == true) {
+                return dbResult;
+            } else {
+                return "error";
+            }
         }
     }
 
@@ -133,20 +135,22 @@ public class EventUpLoadUtils {
      * @return
      * @throws IOException
      */
-    public boolean uploadText(String header,
-                              String startLocation,
-                              String endLocation,
-                              Double startLongitude,
-                              Double endLongitude,
-                              Double startLatitude,
-                              Double endLatitude,
-                              String[] eventLabels,
-                              String eventTitle,
-                              String eventDesc,
-                              String eventVoice,
-                              String[] eventPic,
-                              String eventVideo,
-                              Timestamp startTime) throws IOException {
+    public String uploadText(String header,
+                             String startLocation,
+                             String endLocation,
+                             Double startLongitude,
+                             Double endLongitude,
+                             Double startLatitude,
+                             Double endLatitude,
+                             String[] eventLabels,
+                             String eventTitle,
+                             String eventDesc,
+                             String eventVoice,
+                             String[] eventPic,
+                             String eventVideo,
+                             Long startTime) throws IOException {
+
+        socketJson.setSoTimeout(0);
 
         //读取到输入流的返回信息
         String result = null;
@@ -193,11 +197,7 @@ public class EventUpLoadUtils {
             socketJson.close();
         }
 
-        if ("1".equals(result)) {
-            return true;
-        } else {
-            return false;
-        }
+        return result;
     }
 
     /**
@@ -215,6 +215,8 @@ public class EventUpLoadUtils {
         //建立20001端口的连接
         socketObj = new Socket(Constants.HOST, Constants.PORT_OBJ);
 
+        socketObj.setSoTimeout(0);
+
         String result = null;
         OutputStream out = null;
         ObjectOutputStream objectOut = null;
@@ -222,7 +224,7 @@ public class EventUpLoadUtils {
         try {
             //创建新的Socket连接
             out = socketObj.getOutputStream();
-            objectOut = new ObjectOutputStream(out);
+            objectOut = new ObjectOutputStream(new BufferedOutputStream(out));
 
             BinaryBean binaryBean = new BinaryBean();
             //添加头信息
@@ -230,29 +232,37 @@ public class EventUpLoadUtils {
 
             //语音文件
             binaryBean.setVoiceBinName(eventVoice);
-            binaryBean.setVoiceStream(voiceBin);
+            binaryBean.setVoiceBytes(ZLibUtils.compress(voiceBin));
 
             if (eventPic != null) {
-                //第一张图片
-                binaryBean.setPicBinName1(eventPic[0]);
-                binaryBean.setPicStream1(picBin.get(0));
-
-                //第二张图片
-                binaryBean.setPicBinName2(eventPic[1]);
-                binaryBean.setPicStream2(picBin.get(1));
-
-                //第三张图片
-                binaryBean.setPicBinName3(eventPic[2]);
-                binaryBean.setPicStream3(picBin.get(2));
+                for (int i = 0; i < eventPic.length; i++) {
+                    switch (i) {
+                        case 0:
+                            //第一张图片
+                            binaryBean.setPicBinName1(eventPic[0]);
+                            binaryBean.setPicBytes1(ZLibUtils.compress(picBin.get(0)));
+                            break;
+                        case 1:
+                            //第二张图片
+                            binaryBean.setPicBinName2(eventPic[1]);
+                            binaryBean.setPicBytes2(ZLibUtils.compress(picBin.get(1)));
+                            break;
+                        case 2:
+                            //第三张图片
+                            binaryBean.setPicBinName3(eventPic[2]);
+                            binaryBean.setPicBytes3(ZLibUtils.compress(picBin.get(2)));
+                            break;
+                    }
+                }
             } else {
-                binaryBean.setPicStream1(null);
-                binaryBean.setPicStream2(null);
-                binaryBean.setPicStream3(null);
+                binaryBean.setPicBytes1(null);
+                binaryBean.setPicBytes2(null);
+                binaryBean.setPicBytes3(null);
             }
 
             //视频文件
             binaryBean.setVideoBinName(eventVideo);
-            binaryBean.setVideoStream(videoBin);
+            binaryBean.setVideoBytes(ZLibUtils.compress(videoBin));
 
             //将对象写入流中
             objectOut.writeObject(binaryBean);
@@ -260,8 +270,8 @@ public class EventUpLoadUtils {
             socketObj.shutdownOutput();
 
             //读取输入流，获取执行结果
-//            in = socketObj.getInputStream();
-//            result = StreamUtils.readString(in);
+            in = socketObj.getInputStream();
+            result = StreamUtils.readString(in);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -269,7 +279,7 @@ public class EventUpLoadUtils {
             try {
                 objectOut.close();
                 out.close();
-//                in.close();
+                in.close();
                 socketObj.close();
             } catch (IOException e) {
                 e.printStackTrace();

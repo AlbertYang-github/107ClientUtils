@@ -3,7 +3,6 @@ package test;
 import constants.Constants;
 import myutils.StreamUtils;
 import org.junit.Test;
-import myutils.StringUtils;
 import utils.EventUpLoadUtils;
 import utils.LoginUtils;
 
@@ -21,7 +20,7 @@ public class JunitTest {
             //连接到服务器
             LoginUtils loginUtils = new LoginUtils();
             //注册
-            String s = loginUtils.register(Constants.REGISTER, "yohann", "321");
+            String s = loginUtils.register(Constants.REGISTER, "yoha", "321");
             System.out.println("注册返回数据：" + s);
         } catch (IOException e) {
             e.printStackTrace();
@@ -40,43 +39,111 @@ public class JunitTest {
     }
 
     @Test
-    public void addEvent() {
-        try {
+    public void addEvent() throws IOException {
 
-            ArrayList<byte[]> list = new ArrayList<>();
-            list.add(StreamUtils.getBytes("F:/pic1.jpg"));
-            list.add(StreamUtils.getBytes("F:/pic2.jpg"));
-            list.add(StreamUtils.getBytes("F:/pic3.jpg"));
+//        ArrayList<byte[]> list = new ArrayList<>();
+//        list.add(StreamUtils.getBytes("F:/pic1.jpg"));
+//        list.add(StreamUtils.getBytes("F:/pic2.jpg"));
+//        list.add(StreamUtils.getBytes("F:/pic3.jpg"));
+//
+//        EventUpLoadUtils eventUpLoadUtils = new EventUpLoadUtils();
+//        String result = eventUpLoadUtils.uploadEvent(Constants.ADD_EVENT,
+//                "中北大学",
+//                "胜利桥东",
+//                23.234344,
+//                45.454334,
+//                12.232334,
+//                23.345454,
+//                new String[]{"拥堵", "车祸"},
+//                "中北大学到胜利桥东严重堵车",
+//                "主要是由于滨河东路施工引起的",
+//                "voice.mp3",
+//                new String[]{"pic1.jpg", "pic2.jpg", "pic3.jpg"},
+//                "video.avi",
+//                new Timestamp(System.currentTimeMillis()),
+//                StreamUtils.getBytes("F:/voice.mp3"),
+//                list,
+//                StreamUtils.getBytes("F:/video.avi"));
+//
+//        System.out.println("添加的返回结果：" + result);
 
-            EventUpLoadUtils eventUpLoadUtils = new EventUpLoadUtils();
-            boolean result = eventUpLoadUtils.uploadEvent(Constants.ADD_EVENT,
-                    "中北大学",
-                    "胜利桥东",
-                    23.234344,
-                    45.454334,
-                    12.232334,
-                    23.345454,
-                    new String[]{"拥堵"},
-                    "中北大学到胜利桥东严重堵车",
-                    "主要是由于滨河东路施工引起的",
-                    "voice.mp3",
-                    new String[]{"pic1.jpg", "pic2.jpg", "pic3.jpg"},
-                    "video.mp4",
-                    new Timestamp(System.currentTimeMillis()),
-                    StreamUtils.getBytes("F:/voice.mp3"),
-                    list,
-                    StreamUtils.getBytes("F:/video.avi"));
+//        ArrayList<byte[]> list = new ArrayList<>();
+//        list.add(StreamUtils.getBytes("F:/pic1.jpg"));
+//
+//        EventUpLoadUtils eventUpLoadUtils = new EventUpLoadUtils();
+//        boolean result = eventUpLoadUtils.uploadEvent(Constants.ADD_EVENT,
+//                "中北大学",
+//                "胜利桥东",
+//                23.234344,
+//                45.454334,
+//                12.232334,
+//                23.345454,
+//                new String[]{"拥堵"},
+//                "中北大学到胜利桥东严重堵车",
+//                "主要是由于滨河东路施工引起的",
+//                null,
+//                new String[]{"pic1.jpg"},
+//                "video.avi",
+//                new Timestamp(System.currentTimeMillis()),
+//                null,
+//                list,
+//                StreamUtils.getBytes("F:/video.avi"));
+//
+//        System.out.println("添加的返回结果：" + result);
 
-            System.out.println("添加的返回结果：" + result);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
+        ArrayList<byte[]> list = new ArrayList<>();
+        list.add(StreamUtils.getBytes("F:/pic1.jpg"));
+        list.add(StreamUtils.getBytes("F:/pic2.jpg"));
+
+        EventUpLoadUtils eventUpLoadUtils = new EventUpLoadUtils();
+        String result = eventUpLoadUtils.uploadEvent(Constants.ADD_EVENT,
+                "中北大学",
+                "胜利桥东",
+                23.234344,
+                45.454334,
+                12.232334,
+                23.345454,
+                new String[]{"拥堵"},
+                "中北大学到胜利桥东严重堵车",
+                "主要是由于滨河东路施工引起的",
+                null,
+                null,
+                null,
+                System.currentTimeMillis(),
+                null,
+                null,
+                null);
+
+        System.out.println("添加的返回结果：" + result);
+
+//        ArrayList<byte[]> list = new ArrayList<>();
+//        list.add(StreamUtils.getBytes("F:/pic1.jpg"));
+//        list.add(StreamUtils.getBytes("F:/pic2.jpg"));
+//        list.add(StreamUtils.getBytes("F:/pic3.jpg"));
+//
+//        EventUpLoadUtils eventUpLoadUtils = new EventUpLoadUtils();
+//        String result = eventUpLoadUtils.uploadEvent(Constants.ADD_EVENT,
+//                "中北大学",
+//                "胜利桥东",
+//                23.234344,
+//                45.454334,
+//                12.232334,
+//                23.345454,
+//                new String[]{"拥堵", "车祸"},
+//                "中北大学到胜利桥东严重堵车",
+//                "主要是由于滨河东路施工引起的",
+//                "voice.mp3",
+//                new String[]{"pic1.jpg", "pic2.jpg", "pic3.jpg"},
+//                null,
+//                new Timestamp(System.currentTimeMillis()),
+//                StreamUtils.getBytes("F:/voice.mp3"),
+//                list,
+//                null);
+//
+//        System.out.println("添加的返回结果：" + result);
     }
 
-    @Test
-    public void testStringUtils() {
-        int[] arr = null;
-        System.out.println("arr[0] = " + arr[0]);
-    }
 }
+
 

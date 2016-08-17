@@ -39,9 +39,9 @@ public class EventBean {
     //视频文件路径
     private String videoPath;
     //起始时间
-    private Timestamp startTime;
+    private Long startTime;
     //结束时间
-    private Timestamp endTime;
+    private Long endTime;
 
     public void setId(Integer id) {
         this.id = id;
@@ -107,11 +107,11 @@ public class EventBean {
         this.videoPath = videoPath;
     }
 
-    public void setStartTime(Timestamp startTime) {
+    public void setStartTime(Long startTime) {
         this.startTime = startTime;
     }
 
-    public void setEndTime(Timestamp endTime) {
+    public void setEndTime(Long endTime) {
         this.endTime = endTime;
     }
 
@@ -179,11 +179,11 @@ public class EventBean {
         return videoPath;
     }
 
-    public Timestamp getStartTime() {
+    public Long getStartTime() {
         return startTime;
     }
 
-    public Timestamp getEndTime() {
+    public Long getEndTime() {
         return endTime;
     }
 }
