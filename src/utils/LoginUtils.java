@@ -36,13 +36,12 @@ public class LoginUtils {
     /**
      * 注册
      * <p>
-     * 使用说明：参数 head 是信息，根据请求目的选择 constants.Constants 中的常量填入
      * 如果注册成功，返回用户个人的具体信息 (Json格式字符串)
      * 如果注册失败，返回字符串"error"
      *
      * @return
      */
-    public String register(String header, String username, String password) throws IOException {
+    public String register(String username, String password) throws IOException {
 
         //返回的信息
         String userMsg = null;
@@ -56,7 +55,7 @@ public class LoginUtils {
 
             //创建head + Json串
             String regData = gson.toJson(userBean);
-            regData = header + regData;
+            regData = Constants.TYPE_JSON + Constants.REGISTER + regData;
 
             //写入输出流
             OutputStream out = socket.getOutputStream();
@@ -84,7 +83,7 @@ public class LoginUtils {
      *
      * @return
      */
-    public String login(String header, String username, String password) throws IOException {
+    public String login(String username, String password) throws IOException {
 
         //返回的信息
         String userMsg = null;
@@ -98,7 +97,7 @@ public class LoginUtils {
 
             //创建head + Json串
             String regData = gson.toJson(userBean);
-            regData = header + regData;
+            regData = Constants.TYPE_JSON + Constants.LOGIN + regData;
 
             //写入输出流
             OutputStream out = socket.getOutputStream();

@@ -8,8 +8,8 @@ public class Constants {
     /**
      * 主机地址
      */
-    public static final String HOST = "123.206.8.57";   //服务器
-//    public static final String HOST = "10.130.134.9";   //本台电脑
+//    public static final String HOST = "123.206.8.57";   //服务器
+    public static final String HOST = "10.130.134.9";   //本台电脑
 
     /**
      * 主机端口号(传输Json数据)
@@ -17,9 +17,14 @@ public class Constants {
     public static final int PORT_JSON = 20000;
 
     /**
-     * 主机端口号(传输Java对象)
+     * Json数据类型
      */
-    public static final int PORT_OBJ = 20001;
+    public static final String TYPE_JSON = "json";
+
+    /**
+     * Byte数据类型
+     */
+    public static final String TYPE_BYTE = "byte";
 
     /**
      * 注册
@@ -32,17 +37,12 @@ public class Constants {
     public static final String LOGIN = "002";
 
     /**
-     * 添加标记
+     * 添加事件的文本信息
      */
-    public static final String ADD_EVENT = "003";
+    public static final String ADD_EVENT_TEXT = "003";
 
     /**
-     * 获取标记
+     * 添加事件的二进制文件
      */
-    public static final String GET_EVENT = "004";
-
-    /**
-     * 上传二进制媒体文件
-     */
-    public static final String ADD_BIN = "005";
+    public static final String ADD_EVENT_BIN = "004";
 }
