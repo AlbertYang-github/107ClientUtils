@@ -14,7 +14,12 @@ public class Constants {
     /**
      * 主机端口号(传输Json数据)
      */
-    public static final int PORT_JSON = 20000;
+    public static final int PORT_BASIC = 20000;
+
+    /**
+     * 用户推送消息的端口
+     */
+    public static final int PORT_PUSH = 20001;
 
     /**
      * Json数据类型
@@ -45,4 +50,14 @@ public class Constants {
      * 添加事件的二进制文件
      */
     public static final String ADD_EVENT_BIN = "004";
+
+    /**
+     * 请求事件文本信息
+     */
+    public static final String GET_EVENT_TEXT = "005";
+
+    /**
+     * 建立一个socket等待服务器推送消息
+     */
+    public static final String DATA_PUSH = "006";
 }

@@ -15,12 +15,14 @@ import java.net.Socket;
 /**
  * 事件工具类
  * <p>
- * 1.向服务器上传事件
- * 2.从服务器获取事件
+ * 向服务器上传事件
+ * <p>
+ * uploadText：上传文本信息
+ * uploadBinary：上传二进制文件 (后台进行，显示进度)
  * <p>
  * Created by Yohann on 2016/8/12.
  */
-public class EventUpLoadUtils {
+public class EventUpUtils {
 
     private Socket socketJson;
     private Socket socketByte;
@@ -31,89 +33,24 @@ public class EventUpLoadUtils {
      *
      * @throws IOException
      */
-    public EventUpLoadUtils() throws IOException {
-        socketJson = new Socket(Constants.HOST, Constants.PORT_JSON);
+    public EventUpUtils() throws IOException {
         gson = new Gson();
     }
 
     /**
      * 上传时间到服务器
      *
-     * @param startLocation  起始地名 100
-     * @param endLocation    结束地名 100
+     * @param startLocation  起始地名
+     * @param endLocation    结束地名
      * @param startLongitude 起始经度
      * @param endLongitude   结束经度
      * @param startLatitude  起始纬度
      * @param endLatitude    结束纬度
-     * @param eventLabels    事件标签 (多个标签写法例如："拥堵&事故&警察") 100
+     * @param eventLabels    事件标签 (多个标签写法例如："拥堵||事故||警察") 100
      * @param eventTitle     事件标题 300
      * @param eventDesc      事件描述 1000
      * @param startTime      开始时间 类型为Long
-     * @param dir            事件媒体文件所在的目录File
-     * @return 上传成功返回Json串 (不包括二进制媒体文件)，否则返回 "error"
-     */
-    public String uploadEvent(String startLocation,
-                              String endLocation,
-                              Double startLongitude,
-                              Double endLongitude,
-                              Double startLatitude,
-                              Double endLatitude,
-                              String[] eventLabels,
-                              String eventTitle,
-                              String eventDesc,
-                              Long startTime,
-                              File dir) throws IOException {
-        String dbResult = null;
-        boolean loc = false;
-
-        //上传文本内容
-        dbResult = uploadText(
-                startLocation,
-                endLocation,
-                startLongitude,
-                endLongitude,
-                startLatitude,
-                endLatitude,
-                eventLabels,
-                eventTitle,
-                eventDesc,
-                startTime);
-
-        //上传二进制内容
-        if (dir == null) {
-            //没有二进制文件可上传
-            if (dbResult != "error") {
-                return dbResult;
-            } else {
-                return "error";
-            }
-        } else {
-            loc = uploadBinary(dir);
-            //两者都成功才返回true
-            if (dbResult != "error" && loc == true) {
-                return dbResult;
-            } else {
-                return "error";
-            }
-        }
-    }
-
-
-    /**
-     * 向服务器上传事件文本信息
-     *
-     * @param startLocation
-     * @param endLocation
-     * @param startLongitude
-     * @param endLongitude
-     * @param startLatitude
-     * @param endLatitude
-     * @param eventLabels
-     * @param eventTitle
-     * @param eventDesc
-     * @param startTime
-     * @return
-     * @throws IOException
+     * @return 上传成功返回Json串，否则返回 "error"
      */
     public String uploadText(String startLocation,
                              String endLocation,
@@ -126,6 +63,8 @@ public class EventUpLoadUtils {
                              String eventDesc,
                              Long startTime) throws IOException {
 
+        //建立socket连接
+        socketJson = new Socket(Constants.HOST, Constants.PORT_BASIC);
         socketJson.setSoTimeout(10 * 1000);
 
         //读取到输入流的返回信息
@@ -175,11 +114,12 @@ public class EventUpLoadUtils {
     /**
      * 上传二进制文件
      *
+     * @param dir 事件媒体文件所在的目录File
      * @return
      */
     public boolean uploadBinary(File dir) throws IOException {
         //建立第二次的连接
-        socketByte = new Socket(Constants.HOST, Constants.PORT_JSON);
+        socketByte = new Socket(Constants.HOST, Constants.PORT_BASIC);
         socketByte.setSoTimeout(10 * 1000);
         OutputStream out = socketByte.getOutputStream();
 

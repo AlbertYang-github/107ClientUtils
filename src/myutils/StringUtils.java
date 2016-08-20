@@ -71,4 +71,13 @@ public class StringUtils {
             return null;
         }
     }
+
+    /**
+     * 打印信息
+     *
+     * @param str
+     */
+    public static void print(String str) {
+        System.out.println(str);
+    }
 }

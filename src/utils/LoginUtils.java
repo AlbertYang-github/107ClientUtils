@@ -20,7 +20,8 @@ import java.net.Socket;
  */
 public class LoginUtils {
 
-    private Socket socket;
+    private Socket socketReg;
+    private Socket socketLogin;
     private Gson gson;
 
     /**
@@ -29,7 +30,6 @@ public class LoginUtils {
      * @throws IOException
      */
     public LoginUtils() throws IOException {
-        socket = new Socket(Constants.HOST, Constants.PORT_JSON);
         gson = new Gson();
     }
 
@@ -43,10 +43,13 @@ public class LoginUtils {
      */
     public String register(String username, String password) throws IOException {
 
+        //创建连接
+        socketReg = new Socket(Constants.HOST, Constants.PORT_BASIC);
+
         //返回的信息
         String userMsg = null;
 
-        if (socket != null) {
+        if (socketReg != null) {
 
             //创建注册信息对象
             UserBean userBean = new UserBean();
@@ -58,19 +61,19 @@ public class LoginUtils {
             regData = Constants.TYPE_JSON + Constants.REGISTER + regData;
 
             //写入输出流
-            OutputStream out = socket.getOutputStream();
+            OutputStream out = socketReg.getOutputStream();
             StreamUtils.writeString(out, regData);
-            socket.shutdownOutput();
+            socketReg.shutdownOutput();
 
             //获取输入流
-            InputStream in = socket.getInputStream();
+            InputStream in = socketReg.getInputStream();
             userMsg = StreamUtils.readString(in);
 
             //关闭流和socket
             out.close();
             in.close();
             StreamUtils.close();
-            socket.close();
+            socketReg.close();
         }
         return userMsg;
     }
@@ -85,10 +88,13 @@ public class LoginUtils {
      */
     public String login(String username, String password) throws IOException {
 
+        //创建连接
+        socketLogin = new Socket(Constants.HOST, Constants.PORT_BASIC);
+
         //返回的信息
         String userMsg = null;
 
-        if (socket != null) {
+        if (socketLogin != null) {
 
             //创建注册信息对象
             UserBean userBean = new UserBean();
@@ -100,19 +106,19 @@ public class LoginUtils {
             regData = Constants.TYPE_JSON + Constants.LOGIN + regData;
 
             //写入输出流
-            OutputStream out = socket.getOutputStream();
+            OutputStream out = socketLogin.getOutputStream();
             StreamUtils.writeString(out, regData);
-            socket.shutdownOutput();
+            socketLogin.shutdownOutput();
 
             //获取输入流
-            InputStream in = socket.getInputStream();
+            InputStream in = socketLogin.getInputStream();
             userMsg = StreamUtils.readString(in);
 
             //关闭流和socket
             out.close();
             in.close();
             StreamUtils.close();
-            socket.close();
+            socketLogin.close();
         }
         return userMsg;
     }
