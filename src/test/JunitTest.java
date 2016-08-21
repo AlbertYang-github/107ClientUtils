@@ -1,14 +1,15 @@
 package test;
 
-import com.google.gson.Gson;
-import constants.Variable;
+import bean.EventBean;
+import myutils.StringUtils;
 import org.junit.Test;
-import utils.EventUpUtils;
+import utils.EventGetUtils;
 import utils.LoginUtils;
+import utils.RootEventUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
+import java.util.ArrayList;
 
 /**
  * Created by Yohann on 2016/8/11.
@@ -36,12 +37,6 @@ public class JunitTest {
             LoginUtils loginUtils = new LoginUtils();
             String s = loginUtils.login("heihei", "321");
             System.out.println("登陆返回数据：" + s);
-
-
-
-            Gson gson = new Gson();
-            Map map = gson.fromJson(s, Map.class);
-
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -49,24 +44,24 @@ public class JunitTest {
 
     @Test
     public void addEvent() throws IOException {
-        new Thread() {
-            @Override
-            public void run() {
-                while (true) {
-                    System.out.println("当前进度：" + Variable.progress + "%");
-                    try {
-                        Thread.sleep(1 * 1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    if (Variable.progress == 100) {
-                        break;
-                    }
-                }
-            }
-        }.start();
+//        new Thread() {
+//            @Override
+//            public void run() {
+//                while (true) {
+//                    System.out.println("当前进度：" + Variable.progress + "%");
+//                    try {
+//                        Thread.sleep(1 * 1000);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                    if (Variable.progress == 100) {
+//                        break;
+//                    }
+//                }
+//            }
+//        }.start();
 
-        EventUpUtils eventUpLoadUtils = new EventUpUtils();
+        RootEventUtils eventUpLoadUtils = new RootEventUtils();
         result = eventUpLoadUtils.uploadText(
                 "中北大学",
                 "胜利桥东",
@@ -80,21 +75,33 @@ public class JunitTest {
                 System.currentTimeMillis());
         System.out.println("添加的返回结果：" + result);
 
-        boolean b = eventUpLoadUtils.uploadBinary(new File("F:/EventBin"));
+        boolean b = eventUpLoadUtils.uploadBinary(new File("F:" + File.separator + "EventBin"));
 
         System.out.println(b);
     }
 
-//    @Test
-//    public void recePush() throws IOException {
-//        //建立Push连接
-//        boolean res = PushUtils.connect();
-//        if (res == true) {
-//            StringUtils.print("连接成功");
-//        } else {
-//            StringUtils.print("连接失败");
-//        }
-//    }
+    @Test
+    public void getEventText() throws IOException {
+        EventGetUtils eventGetUtils = new EventGetUtils();
+        ArrayList<EventBean> beanList = eventGetUtils.getText();
+        for (int i = 0; i < beanList.size(); i++) {
+            EventBean eventBean = beanList.get(i);
+            Integer id = eventBean.getId();
+            System.out.println(id);
+        }
+    }
+
+    @Test
+    public void remove() throws IOException {
+        RootEventUtils utils = new RootEventUtils();
+        boolean res = utils.remove(171);
+        System.out.println(res);
+    }
+
+    @Test
+    public void pathTest() throws IOException {
+        new File("D:\\107Server\\107Files\\Events\\155\\video.avi").delete();
+    }
 }
 
 

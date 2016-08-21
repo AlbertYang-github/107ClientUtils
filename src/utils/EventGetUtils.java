@@ -6,9 +6,10 @@ import constants.Constants;
 import myutils.StreamUtils;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * 向服务器请求事件信息
@@ -30,22 +31,31 @@ public class EventGetUtils {
     }
 
     /**
-     * 请求文本信息
+     * 请求文本信息 (可能有多个事件信息)
      *
-     * @param id 事件id
-     * @return Json串 (包含该事件的全部文本信息)
+     * @return EventBean (包含该事件的全部文本信息)
      */
-//    public String getText(int id) throws IOException {
-//        //创建 header + json
-//        String header = Constants.TYPE_JSON + Constants.GET_EVENT_TEXT;
-//        EventBean eventBean = new EventBean();
-//        eventBean.setId(id);
-//        String json = gson.toJson(eventBean);
-//        String req = header + json;
-//
-//        //写入输出流，发送给服务器
-//        OutputStream out = socketJson.getOutputStream();
-//        StreamUtils.writeString(out, req);
-//        socketJson.shutdownOutput();
-//    }
+    public ArrayList<EventBean> getText() throws IOException {
+        //创建 header + json
+        String header = Constants.TYPE_JSON + Constants.GET_EVENT_TEXT;
+
+        //写入输出流，发送给服务器
+        OutputStream out = socketJson.getOutputStream();
+        StreamUtils.writeString(out, header);
+        socketJson.shutdownOutput();
+
+        //获取响应数据
+        InputStream in = socketJson.getInputStream();
+        String data = StreamUtils.readString(in);
+
+        ArrayList<String> jsonList = gson.fromJson(data, ArrayList.class);
+        ArrayList<EventBean> beanList = new ArrayList<>();
+        for (int i = 0; i < jsonList.size(); i++) {
+            String evetJson = jsonList.get(i);
+            EventBean eventBean = gson.fromJson(evetJson, EventBean.class);
+            beanList.add(eventBean);
+        }
+
+        return beanList;
+    }
 }

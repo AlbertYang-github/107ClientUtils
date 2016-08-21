@@ -91,6 +91,7 @@ public class StreamUtils {
     public static void compressDir(File dir, OutputStream out) throws IOException {
         ZipOutputStream zos = null;
         BufferedInputStream bis = null;
+        FileInputStream fis = null;
 
         if (!dir.exists()) {
             System.out.println("目录不存在");
@@ -114,7 +115,8 @@ public class StreamUtils {
             for (int i = 0; i < files.length; i++) {
                 //压缩一个文件
                 File file = files[i];
-                bis = new BufferedInputStream(new FileInputStream(file));
+                fis = new FileInputStream(file);
+                bis = new BufferedInputStream(fis);
                 ZipEntry entry = new ZipEntry(file.getName());
                 zos.putNextEntry(entry);
                 int len = 0;
@@ -128,10 +130,9 @@ public class StreamUtils {
                         Variable.progress = (int) ((Variable.UpLength * 100) / Variable.length);
                     }
                 }
+                bis.close();
+                fis.close();
             }
-        }
-        if (bis != null) {
-            bis.close();
         }
     }
 
@@ -152,7 +153,7 @@ public class StreamUtils {
         ZipEntry entry = null;
 
         while ((entry = zis.getNextEntry()) != null) {
-            String path = desDir + "/" + entry.getName();
+            String path = desDir + File.separator + entry.getName();
             File file = new File(path);
             bos = new BufferedOutputStream(
                     new FileOutputStream(file));

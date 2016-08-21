@@ -43,7 +43,24 @@ public class PushUtils {
                     //将数据存放在List集合中
                     Gson gson = new Gson();
                     EventBean eventBean = gson.fromJson(data, EventBean.class);
-                    Variable.dataList.add(eventBean);
+
+//                    if (Flag.ishome) {
+                        //在主界面调用绘制路线的方法
+                        String startLocation = eventBean.getStartLocation();
+                        String endLocation = eventBean.getEndLocation();
+                        Double startLongitude = eventBean.getStartLongitude();
+                        Double endLongitude = eventBean.getEndLongitude();
+                        Double startLatitude = eventBean.getStartLatitude();
+                        Double endLatitude = eventBean.getEndLatitude();
+                        String eventLabels = eventBean.getEventLabels();
+                        String eventTitle = eventBean.getEventTitle();
+                        String eventDesc = eventBean.getEventDesc();
+                        Long startTime = eventBean.getStartTime();
+//                        showEvent();
+//                    } else {
+                        //不在主界面，保存数据
+                        Variable.dataList.add(eventBean);
+//                    }
 
                     //5s后再次建立推送连接
                     Thread.sleep(5 * 1000);

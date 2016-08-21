@@ -20,7 +20,7 @@ public class StringUtils {
             strBuilder = new StringBuilder();
             for (int i = 0; i < arr.length; i++) {
                 if (i != arr.length - 1) {
-                    strBuilder.append(arr[i] + "||");
+                    strBuilder.append(arr[i] + "##");
                 } else {
                     strBuilder.append(arr[i]);
                 }
@@ -41,7 +41,7 @@ public class StringUtils {
     public static String[] getArrayFromString(String str) {
         String[] arr = null;
         if (str != null) {
-            arr = str.split("||");
+            arr = str.split("##");
         }
         return arr;
     }
@@ -60,7 +60,7 @@ public class StringUtils {
             strBuilder = new StringBuilder();
             for (int i = 0; i < list.size(); i++) {
                 if (i != list.size() - 1) {
-                    strBuilder.append(list.get(i) + "||");
+                    strBuilder.append(list.get(i) + "##");
                 } else {
                     strBuilder.append(list.get(i));
                 }

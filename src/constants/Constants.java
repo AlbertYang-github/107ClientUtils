@@ -57,7 +57,7 @@ public class Constants {
     public static final String GET_EVENT_TEXT = "005";
 
     /**
-     * 建立一个socket等待服务器推送消息
+     * 删除信息
      */
-    public static final String DATA_PUSH = "006";
+    public static final String REMOVE_EVENT = "006";
 }

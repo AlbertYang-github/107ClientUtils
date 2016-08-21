@@ -22,23 +22,19 @@ import java.net.Socket;
  * <p>
  * Created by Yohann on 2016/8/12.
  */
-public class EventUpUtils {
+public class RootEventUtils {
 
-    private Socket socketJson;
-    private Socket socketByte;
+    private Socket socketUpText;
+    private Socket socketUpBin;
+    private Socket socketRemove;
     private Gson gson;
 
-    /**
-     * 构造方法中创建Socket连接
-     *
-     * @throws IOException
-     */
-    public EventUpUtils() throws IOException {
+    public RootEventUtils() throws IOException {
         gson = new Gson();
     }
 
     /**
-     * 上传时间到服务器
+     * 上传事件的基本信息到服务器
      *
      * @param startLocation  起始地名
      * @param endLocation    结束地名
@@ -64,8 +60,8 @@ public class EventUpUtils {
                              Long startTime) throws IOException {
 
         //建立socket连接
-        socketJson = new Socket(Constants.HOST, Constants.PORT_BASIC);
-        socketJson.setSoTimeout(10 * 1000);
+        socketUpText = new Socket(Constants.HOST, Constants.PORT_BASIC);
+        socketUpText.setSoTimeout(10 * 1000);
 
         //读取到输入流的返回信息
         String result = null;
@@ -73,7 +69,7 @@ public class EventUpUtils {
         //将数组转换为以&连接的字符串
         String labels = StringUtils.getStringFromArray(eventLabels);
 
-        if (socketJson != null) {
+        if (socketUpText != null) {
 
             //创建事件模型
             EventBean eventBean = new EventBean();
@@ -93,19 +89,19 @@ public class EventUpUtils {
             eventData = Constants.TYPE_JSON + Constants.ADD_EVENT_TEXT + eventData;
 
             //写入输出流，发送给服务器
-            OutputStream out = socketJson.getOutputStream();
+            OutputStream out = socketUpText.getOutputStream();
             StreamUtils.writeString(out, eventData);
-            socketJson.shutdownOutput();
+            socketUpText.shutdownOutput();
 
             //读取输入流，获取执行结果
-            InputStream in = socketJson.getInputStream();
+            InputStream in = socketUpText.getInputStream();
             result = StreamUtils.readString(in);
 
             //关闭流和socket
             out.close();
             in.close();
             StreamUtils.close();
-            socketJson.close();
+            socketUpText.close();
         }
 
         return result;
@@ -118,10 +114,10 @@ public class EventUpUtils {
      * @return
      */
     public boolean uploadBinary(File dir) throws IOException {
-        //建立第二次的连接
-        socketByte = new Socket(Constants.HOST, Constants.PORT_BASIC);
-        socketByte.setSoTimeout(10 * 1000);
-        OutputStream out = socketByte.getOutputStream();
+        //建立连接
+        socketUpBin = new Socket(Constants.HOST, Constants.PORT_BASIC);
+        socketUpBin.setSoTimeout(10 * 1000);
+        OutputStream out = socketUpBin.getOutputStream();
 
         //写入头信息
         byte[] header = (Constants.TYPE_BYTE + Constants.ADD_EVENT_BIN).getBytes();
@@ -130,20 +126,57 @@ public class EventUpUtils {
 
         //压缩文件目录
         StreamUtils.compressDir(dir, out);
-        socketByte.shutdownOutput();
+        socketUpBin.shutdownOutput();
 
         //上传结果
-        InputStream in = socketByte.getInputStream();
+        InputStream in = socketUpBin.getInputStream();
         String result = StreamUtils.readString(in);
 
         in.close();
         out.close();
-        socketByte.close();
+        socketUpBin.close();
 
         if ("1".equals(result)) {
             return true;
         } else {
             return false;
+        }
+    }
+
+    /**
+     * 删除事件
+     *
+     * @param id
+     * @return
+     */
+    public boolean remove(int id) throws IOException {
+        //建立连接
+        socketRemove = new Socket(Constants.HOST, Constants.PORT_BASIC);
+        socketRemove.setSoTimeout(10 * 1000);
+        OutputStream out = socketRemove.getOutputStream();
+
+        EventBean eventBean = new EventBean();
+        eventBean.setId(id);
+        String data = gson.toJson(eventBean);
+
+        //请求信息
+        data = Constants.TYPE_JSON + Constants.REMOVE_EVENT + data;
+
+        StreamUtils.writeString(out, data);
+        socketRemove.shutdownOutput();
+
+        //接收返回结果
+        InputStream in = socketRemove.getInputStream();
+        String result = StreamUtils.readString(in);
+
+        out.close();
+        in.close();
+        socketRemove.close();
+
+        if ("0".equals(result)) {
+            return false;
+        } else {
+            return true;
         }
     }
 }

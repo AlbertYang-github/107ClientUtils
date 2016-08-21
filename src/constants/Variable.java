@@ -3,7 +3,6 @@ package constants;
 import bean.EventBean;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 /**
  * Created by Yohann on 2016/8/19.
@@ -25,7 +24,7 @@ public class Variable {
     public static int progress = 0;
 
     /**
-     * 收到的推送数据
+     * 从服务器获取的到事件的基本信息 (包括推送和请求数据, 注意使用过的数据删除掉, 避免不必要的操作)
      */
     public static ArrayList<EventBean> dataList = new ArrayList<>();
 }
