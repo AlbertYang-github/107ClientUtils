@@ -1,10 +1,13 @@
 package test;
 
 import bean.EventBean;
+import bean.PathBean;
+import constants.Variable;
 import myutils.StringUtils;
 import org.junit.Test;
 import utils.EventGetUtils;
 import utils.LoginUtils;
+import utils.PathLoadUtils;
 import utils.RootEventUtils;
 
 import java.io.File;
@@ -44,22 +47,22 @@ public class JunitTest {
 
     @Test
     public void addEvent() throws IOException {
-//        new Thread() {
-//            @Override
-//            public void run() {
-//                while (true) {
-//                    System.out.println("当前进度：" + Variable.progress + "%");
-//                    try {
-//                        Thread.sleep(1 * 1000);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//                    if (Variable.progress == 100) {
-//                        break;
-//                    }
-//                }
-//            }
-//        }.start();
+        new Thread() {
+            @Override
+            public void run() {
+                while (true) {
+                    System.out.println("当前进度：" + Variable.progress + "%");
+                    try {
+                        Thread.sleep(1 * 1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    if (Variable.progress == 100) {
+                        break;
+                    }
+                }
+            }
+        }.start();
 
         RootEventUtils eventUpLoadUtils = new RootEventUtils();
         result = eventUpLoadUtils.uploadText(
@@ -75,7 +78,7 @@ public class JunitTest {
                 System.currentTimeMillis());
         System.out.println("添加的返回结果：" + result);
 
-        boolean b = eventUpLoadUtils.uploadBinary(new File("F:" + File.separator + "EventBin"));
+        boolean b = eventUpLoadUtils.uploadBinary(new File("F:" + File.separator + "event"));
 
         System.out.println(b);
     }
@@ -99,8 +102,10 @@ public class JunitTest {
     }
 
     @Test
-    public void pathTest() throws IOException {
-        new File("D:\\107Server\\107Files\\Events\\155\\video.avi").delete();
+    public void loadPath() throws IOException {
+        PathBean pathBean = new PathLoadUtils().load(186);
+        String videoPath = pathBean.getVideoPath();
+        StringUtils.print(videoPath);
     }
 }
 

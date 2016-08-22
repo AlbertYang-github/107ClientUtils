@@ -60,4 +60,9 @@ public class Constants {
      * 删除信息
      */
     public static final String REMOVE_EVENT = "006";
+
+    /**
+     * 获取在线加载媒体文件的路径
+     */
+    public static final String GET_LOAD_PATH = "007";
 }

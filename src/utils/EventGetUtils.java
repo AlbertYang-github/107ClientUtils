@@ -14,6 +14,11 @@ import java.util.ArrayList;
 /**
  * 向服务器请求事件信息
  * <p>
+ * 使用时间：
+ * 1.注册或登录成功后
+ * 2.手动刷新时
+ * <p>
+ * <p>
  * Created by Yohann on 2016/8/19.
  */
 public class EventGetUtils {
